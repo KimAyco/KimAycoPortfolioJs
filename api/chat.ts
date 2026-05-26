@@ -1,26 +1,23 @@
-import {
-  completeGroqChat,
-  DEFAULT_GROQ_CHAT_MODEL,
-  type ChatMessage,
-} from "../server/groq-chat"
+import type { VercelRequest, VercelResponse } from "@vercel/node"
+import { completeGroqChat, DEFAULT_GROQ_CHAT_MODEL } from "./lib/groq-chat"
+import { parseJsonBody } from "./lib/parse-body"
+import type { ChatMessage } from "./lib/types"
 
-interface VercelRequest {
-  method?: string
-  body?: { messages?: ChatMessage[] }
-}
-
-interface VercelResponse {
-  setHeader(name: string, value: string): void
-  status(code: number): { json(body: unknown): void; end(): void }
-}
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+function setCors(res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*")
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS")
   res.setHeader("Access-Control-Allow-Headers", "Content-Type")
+}
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  setCors(res)
 
   if (req.method === "OPTIONS") {
     return res.status(200).end()
+  }
+
+  if (req.method === "GET") {
+    return res.status(200).json({ ok: true, service: "lucy-chat" })
   }
 
   if (req.method !== "POST") {
@@ -34,17 +31,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     })
   }
 
-  const messages = req.body?.messages
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return res.status(400).json({ error: "messages array required" })
-  }
-
   try {
+    const body = parseJsonBody<{ messages?: ChatMessage[] }>(req)
+    const messages = body.messages
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return res.status(400).json({ error: "messages array required" })
+    }
+
     const model = process.env.GROQ_CHAT_MODEL ?? DEFAULT_GROQ_CHAT_MODEL
     const reply = await completeGroqChat(messages, apiKey, model)
     return res.status(200).json({ reply })
   } catch (e) {
     const message = e instanceof Error ? e.message : "Groq request failed"
+    console.error("[api/chat]", message)
     return res.status(500).json({ error: message })
   }
 }

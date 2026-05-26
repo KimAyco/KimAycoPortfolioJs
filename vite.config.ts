@@ -6,9 +6,9 @@ import type { IncomingMessage, ServerResponse } from "node:http"
 import {
   completeGroqChat,
   DEFAULT_GROQ_CHAT_MODEL,
-  type ChatMessage,
-} from "./server/groq-chat"
-import { transcribeWithGroq } from "./server/groq-transcribe"
+} from "./api/lib/groq-chat"
+import type { ChatMessage } from "./api/lib/types"
+import { transcribeWithGroq } from "./api/lib/groq-transcribe"
 
 function readJsonBody(req: IncomingMessage): Promise<unknown> {
   return new Promise((resolve, reject) => {

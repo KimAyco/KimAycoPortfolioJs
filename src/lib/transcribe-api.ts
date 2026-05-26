@@ -1,3 +1,5 @@
+import { parseApiJson } from "@/lib/api-response"
+
 export async function transcribeRecording(audioBase64: string, mimeType: string): Promise<string> {
   const response = await fetch("/api/transcribe", {
     method: "POST",
@@ -5,7 +7,7 @@ export async function transcribeRecording(audioBase64: string, mimeType: string)
     body: JSON.stringify({ audio: audioBase64, mimeType }),
   })
 
-  const data = (await response.json()) as { text?: string; error?: string }
+  const data = await parseApiJson<{ text?: string; error?: string }>(response)
 
   if (!response.ok) {
     throw new Error(data.error || `Transcription failed (${response.status})`)

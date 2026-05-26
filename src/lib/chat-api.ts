@@ -1,4 +1,5 @@
 import type { ChatMessage } from "@/types/chat"
+import { parseApiJson } from "@/lib/api-response"
 
 export type { ChatMessage }
 
@@ -11,7 +12,7 @@ export async function sendChatMessage(
     body: JSON.stringify({ messages }),
   })
 
-  const data = (await response.json()) as { reply?: string; error?: string }
+  const data = await parseApiJson<{ reply?: string; error?: string }>(response)
 
   if (!response.ok) {
     throw new Error(data.error || `Request failed (${response.status})`)
