@@ -8,7 +8,7 @@ import { TypewriterText } from "./TypewriterText"
 import { useMousePosition } from "@/hooks/use-mouse-position"
 
 export function CyberHero({
-  title = "kim ayco portfolio",
+  title = "Kim John Marell Ayco PORTFOLIO",
   subtitle,
   children,
 }: {

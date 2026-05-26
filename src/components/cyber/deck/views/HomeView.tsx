@@ -97,9 +97,9 @@ export function HomeView({
         <header className="shrink-0 border-b border-primary/15 pb-2.5">
           <h1
             className="text-glitch font-mono text-2xl font-bold leading-tight text-glow-primary text-primary sm:text-3xl"
-            data-text="kim ayco portfolio"
+            data-text="Kim John Marell Ayco PORTFOLIO"
           >
-            <TypewriterText text="kim ayco portfolio" speed={40} />
+            <TypewriterText text="Kim John Marell Ayco PORTFOLIO" speed={40} />
           </h1>
           <p className="mt-1 font-mono text-[10px] leading-snug text-muted-foreground sm:text-[11px]">
             <TypewriterText
