@@ -1,8 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion"
-import heroCyber from "@/assets/hero-cyber.png"
-import { DitheredImage } from "@/components/cyber/DitheredImage"
+import visorVideo from "@/assets/Animate_eye_to_move_blink_202605262051.mp4"
+import { DitheredVideo } from "@/components/cyber/DitheredVideo"
 import { TypewriterText } from "@/components/cyber/TypewriterText"
 import { SystemVitals } from "@/components/cyber/SystemVitals"
 import { ModuleLauncher } from "../ModuleLauncher"
@@ -41,10 +41,11 @@ export function HomeView({ onNavigate }: { onNavigate: (s: DeckScreen) => void }
             <span className="ml-auto font-mono text-[9px] text-primary/40">VISOR_UPLINK</span>
           </div>
           <div className="relative min-h-0 flex-1">
-            <DitheredImage
-              src={heroCyber}
-              alt="Cyber portrait"
+            <DitheredVideo
+              src={visorVideo}
+              alt="Cyber visor feed"
               cellSize={3}
+              playbackRate={2}
               className="absolute inset-0"
             />
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_var(--mx)_var(--my),rgba(204,255,0,0.14)_0%,transparent_55%)]" />
