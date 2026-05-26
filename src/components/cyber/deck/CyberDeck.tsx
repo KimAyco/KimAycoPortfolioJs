@@ -25,6 +25,7 @@ export function CyberDeck() {
   const [screen, setScreen] = useState<DeckScreen>(reducedMotion ? "home" : "boot")
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | undefined>()
+  const [lucyIntroReady, setLucyIntroReady] = useState(reducedMotion)
   const [transitionDir, setTransitionDir] = useState<TransitionDirection>("forward")
   const screenRef = useRef<DeckScreen>(screen)
   screenRef.current = screen
@@ -43,7 +44,8 @@ export function CyberDeck() {
     if (screen !== "boot" || reducedMotion) return
     const t = window.setTimeout(() => {
       goTo("home")
-      setStatusMessage("BOOT COMPLETE — PRESS [1-5]")
+      setLucyIntroReady(true)
+      setStatusMessage("BOOT COMPLETE — LUCY ONLINE")
     }, 2600)
     return () => window.clearTimeout(t)
   }, [screen, reducedMotion, goTo])
@@ -116,7 +118,7 @@ export function CyberDeck() {
       case "capabilities": return <CapabilitiesView />
       case "help":         return <HelpView />
       case "uplink":       return <UplinkView />
-      default:             return <HomeView onNavigate={navigate} />
+      default:             return <HomeView onNavigate={navigate} lucyIntroReady={lucyIntroReady} />
     }
   }
 

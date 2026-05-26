@@ -1,18 +1,27 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import visorVideo from "@/assets/Animate_eye_to_move_blink_202605262051.mp4"
 import { DitheredVideo } from "@/components/cyber/DitheredVideo"
 import { TypewriterText } from "@/components/cyber/TypewriterText"
 import { SystemVitals } from "@/components/cyber/SystemVitals"
-import { ModuleLauncher } from "../ModuleLauncher"
+import { DeckChatbot } from "../DeckChatbot"
+import { VisorVoiceIndicator } from "../VisorVoiceIndicator"
 import { Badge } from "@/components/ui/badge"
 import { projects } from "@/data/portfolio"
 import { useMousePosition } from "@/hooks/use-mouse-position"
-import type { DeckScreen } from "@/types/deck"
 import type { CSSProperties } from "react"
+import type { NavigableScreen } from "@/lib/lucy-navigation"
 
-export function HomeView({ onNavigate }: { onNavigate: (s: DeckScreen) => void }) {
+export function HomeView({
+  onNavigate,
+  lucyIntroReady = false,
+}: {
+  onNavigate?: (screen: NavigableScreen) => void
+  lucyIntroReady?: boolean
+}) {
+  const [lucySpeaking, setLucySpeaking] = useState(false)
   const mouse = useMousePosition()
   const liveCount = projects.filter((p) => p.progress >= 100).length
 
@@ -38,9 +47,9 @@ export function HomeView({ onNavigate }: { onNavigate: (s: DeckScreen) => void }
             <span className="h-1.5 w-1.5 bg-accent" />
             <span className="h-1.5 w-1.5 bg-primary" />
             <span className="h-1.5 w-1.5 bg-secondary" />
-            <span className="ml-auto font-mono text-[9px] text-primary/40">VISOR_UPLINK</span>
+            <span className="ml-auto font-mono text-[9px] text-primary/40">LUCY_VISOR</span>
           </div>
-          <div className="relative min-h-0 flex-1">
+          <div className="relative min-h-0 flex-1 overflow-hidden">
             <DitheredVideo
               src={visorVideo}
               alt="Cyber visor feed"
@@ -56,6 +65,7 @@ export function HomeView({ onNavigate }: { onNavigate: (s: DeckScreen) => void }
               transition={{ duration: 2.8, repeat: Infinity }}
             />
             <div className="pointer-events-none absolute inset-0 deck-corners" />
+            <VisorVoiceIndicator active={lucySpeaking} />
           </div>
         </div>
       </motion.aside>
@@ -93,15 +103,15 @@ export function HomeView({ onNavigate }: { onNavigate: (s: DeckScreen) => void }
           </h1>
           <p className="mt-1 font-mono text-[10px] leading-snug text-muted-foreground sm:text-[11px]">
             <TypewriterText
-              text=">> Select a module or press [1-5]"
-              speed={18}
+              text=">> LUCY online — Kim's deck assistant · chat or press [1-5] to navigate"
+              speed={16}
               delay={300}
               showCursor={false}
             />
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             <Badge variant="secondary" className="text-[8px] sm:text-[9px]">
-              AVAILABLE
+              LUCY: ONLINE
             </Badge>
             <Badge variant="outline" className="text-[8px] sm:text-[9px]">
               {liveCount}/{projects.length} NODES
@@ -115,19 +125,20 @@ export function HomeView({ onNavigate }: { onNavigate: (s: DeckScreen) => void }
           </div>
         </header>
 
-        {/* Module grid — fills remaining space */}
+        {/* Groq neural assistant */}
         <section className="flex min-h-0 flex-1 flex-col">
           <div className="mb-1.5 flex shrink-0 items-center gap-2">
             <span className="font-mono text-[8px] uppercase tracking-widest text-primary/35">
-              modules
+              lucy_interface
             </span>
             <span className="h-px flex-1 bg-primary/10" />
-            <span className="font-mono text-[8px] text-primary/25">[1-5]</span>
+            <span className="font-mono text-[8px] text-primary/25">ASSISTANT</span>
           </div>
-          <ModuleLauncher
-            onNavigate={onNavigate}
+          <DeckChatbot
             className="min-h-0 flex-1"
-            fillHeight
+            onSpeakingChange={setLucySpeaking}
+            onNavigate={onNavigate}
+            introReady={lucyIntroReady}
           />
         </section>
 

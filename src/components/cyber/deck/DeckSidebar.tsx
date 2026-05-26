@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { DECK_MODULES, type DeckScreen } from "@/types/deck"
 import { SidebarConsole } from "./SidebarConsole"
+import { VoicePulseBars } from "@/components/cyber/VoicePulseBars"
 import { cn } from "@/lib/utils"
 
 function useLiveClock() {
@@ -15,22 +16,6 @@ function useLiveClock() {
     return () => clearInterval(id)
   }, [])
   return clock
-}
-
-function PulseBar() {
-  return (
-    <div className="flex items-end gap-0.5 h-3">
-      {[3, 5, 4, 7, 5, 3, 6, 4, 5, 3].map((h, i) => (
-        <motion.span
-          key={i}
-          className="w-0.5 bg-primary/50"
-          animate={{ height: [h, h + Math.random() * 4, h] }}
-          transition={{ duration: 0.4 + Math.random() * 0.4, repeat: Infinity, delay: i * 0.06 }}
-          style={{ height: h }}
-        />
-      ))}
-    </div>
-  )
 }
 
 export function DeckSidebar({
@@ -53,7 +38,7 @@ export function DeckSidebar({
         <p className="font-mono text-lg font-bold text-glow-primary text-primary">KIM_SYS</p>
         <div className="mt-1.5 flex items-center justify-between">
           <span className="font-mono text-[9px] tabular-nums text-primary/50">{clock}</span>
-          <PulseBar />
+          <VoicePulseBars active={false} barCount={10} className="h-3" barClassName="w-0.5" />
         </div>
         <p className="mt-1 font-mono text-[8px] text-primary/25">KEYS [1-5] // ESC=HOME</p>
       </div>

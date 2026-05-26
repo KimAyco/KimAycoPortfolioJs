@@ -35,6 +35,7 @@ export function DitheredVideo({
   const reducedMotion = useReducedMotion()
   const rafRef = useRef<number>(0)
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const phaseRef = useRef({ x: 0, y: 0 })
 
   const clearIdleTimer = useCallback(() => {
     if (idleTimerRef.current) {
@@ -71,7 +72,33 @@ export function DitheredVideo({
     ctx.drawImage(video, sx, sy, sw, sh)
 
     const imageData = ctx.getImageData(0, 0, w, h)
-    ditherImageData(imageData, cellSize)
+    const isPaused = video.paused
+    const t = performance.now() * 0.001
+    // Crawling Bayer phase — stronger when video is idle (living static)
+    const speed = reducedMotion ? 0 : isPaused ? 6 : 2
+    phaseRef.current = {
+      x: Math.floor(t * speed) % 4,
+      y: Math.floor(t * speed * 0.65) % 4,
+    }
+    ditherImageData(imageData, cellSize, undefined, phaseRef.current)
+
+    // Subtle per-cell flicker on idle frames
+    if (isPaused && !reducedMotion) {
+      const { width, height, data: px } = imageData
+      const flicker = Math.sin(t * 14) * 4
+      for (let y = 0; y < height; y += cellSize) {
+        for (let x = 0; x < width; x += cellSize) {
+          if (Math.random() > 0.92) {
+            const i = (y * width + x) * 4
+            const n = flicker + (Math.random() - 0.5) * 18
+            px[i] = Math.min(255, Math.max(0, px[i] + n))
+            px[i + 1] = Math.min(255, Math.max(0, px[i + 1] + n * 0.6))
+            px[i + 2] = Math.min(255, Math.max(0, px[i + 2] + n * 0.4))
+          }
+        }
+      }
+    }
+
     ctx.putImageData(imageData, 0, 0)
 
     if (!reducedMotion) {

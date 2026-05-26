@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 const ITEMS = [
   "SYS.ONLINE",
   "DITHER_ENGINE: ACTIVE",
-  "NEURAL_LINK: STABLE",
+  "LUCY: ONLINE",
   "UPLINK: SECURE",
   "KIM_SYS: v2.2",
   "PROJECTS: 4 ARCHIVED",

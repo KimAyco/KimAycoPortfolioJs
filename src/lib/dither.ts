@@ -56,9 +56,13 @@ export function quantizeToPalette(
 export function ditherImageData(
   data: ImageData,
   cellSize = 4,
-  palette: readonly (readonly [number, number, number])[] = Object.values(CYBER_PALETTE)
+  palette: readonly (readonly [number, number, number])[] = Object.values(CYBER_PALETTE),
+  /** Shift Bayer matrix — animating this makes idle frames shimmer */
+  phase: { x: number; y: number } = { x: 0, y: 0 }
 ): void {
   const { width, height, data: px } = data
+  const phaseX = ((phase.x % 4) + 4) % 4
+  const phaseY = ((phase.y % 4) + 4) % 4
   for (let y = 0; y < height; y += cellSize) {
     for (let x = 0; x < width; x += cellSize) {
       let r = 0
@@ -78,7 +82,9 @@ export function ditherImageData(
       g /= count
       b /= count
 
-      const threshold = (BAYER_4[y % 4][x % 4] / 16) * 64 - 32
+      const bx = (Math.floor(x / cellSize) + phaseX) % 4
+      const by = (Math.floor(y / cellSize) + phaseY) % 4
+      const threshold = (BAYER_4[by][bx] / 16) * 64 - 32
       const [qr, qg, qb] = quantizeToPalette(
         Math.min(255, Math.max(0, r + threshold)),
         Math.min(255, Math.max(0, g + threshold)),

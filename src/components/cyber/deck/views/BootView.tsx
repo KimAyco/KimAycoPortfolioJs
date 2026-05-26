@@ -10,7 +10,7 @@ const BOOT_LINES = [
   { text: "MEMORY CHECK.......... 1024kb OK", level: "ok" as const },
   { text: "DITHER_ENGINE........ ACTIVE", level: "ok" as const },
   { text: "MOUNTING PROJECT_ARCHIVE/", level: "info" as const },
-  { text: "NEURAL_LINK HANDSHAKE v3.0", level: "info" as const },
+  { text: "LUCY INTERFACE HANDSHAKE v3.0", level: "info" as const },
   { text: "CYBERDECK READY", level: "ok" as const },
 ]
 

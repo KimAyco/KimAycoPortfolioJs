@@ -1,0 +1,43 @@
+import { transcribeWithGroq } from "../server/groq-transcribe"
+
+interface VercelRequest {
+  method?: string
+  body?: { audio?: string; mimeType?: string }
+}
+
+interface VercelResponse {
+  setHeader(name: string, value: string): void
+  status(code: number): { json(body: unknown): void; end(): void }
+}
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader("Access-Control-Allow-Origin", "*")
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS")
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type")
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end()
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" })
+  }
+
+  const apiKey = process.env.GROQ_API_KEY
+  if (!apiKey) {
+    return res.status(503).json({ error: "GROQ_API_KEY is not configured on the server." })
+  }
+
+  const { audio, mimeType } = req.body ?? {}
+  if (!audio || typeof audio !== "string") {
+    return res.status(400).json({ error: "audio (base64) required" })
+  }
+
+  try {
+    const text = await transcribeWithGroq(audio, mimeType ?? "audio/webm", apiKey)
+    return res.status(200).json({ text })
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Transcription failed"
+    return res.status(500).json({ error: message })
+  }
+}
